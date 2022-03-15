@@ -1,0 +1,68 @@
+Metadata-Version: 2.1
+Name: fake_user_agent
+Version: 0.0.15
+Summary: Fake useragent randomly generates a useragent for fetching a webpage without a browser.
+Home-page: https://github.com/KateWang2016/fake_user_agent
+Keywords: python, useragent, http, header
+Author: Kate Wang
+Author-email: kate.wang2018@gmail.com
+Requires-Python: >=3.7
+Description-Content-Type: text/markdown
+Classifier: License :: OSI Approved :: MIT License
+Requires-Dist: lxml
+Requires-Dist: aiohttp
+
+Randomly generate a fake useragent.
+
+This project's idea is inspired by [fake-useragent](https://github.com/hellysmile/fake-useragent). I rewrote the whole codes in order to boost performance by:
+  - using `asyncio` and `aiohttp` to improve fetching speed
+  - taking advantage of `Xpath` to improve parsing speed
+  - changing random choice algorithm to improve random choice speed
+
+Supported browsers are: chrome, edge, firefox, safari, and opera. Browser name is case insensitive. Some other possible spellings of each browser are mapped to the right one (e.g. "ie" -> "edge", "google" -> "chrome").
+
+# Usage
+On your terminal, enter `fakeua`
+![](/screenshots/browser.png)
+
+In python script, just import the function. Every time you run your python script, the user agent is randomly chosen, so each time the value is different.
+```python
+from fake_user_agent.main import user_agent
+
+# Not specify a browser:
+ua = user_agent()
+
+# Specify a browser to randomly choose from:
+ua = user_agent("chrome")
+
+# Using tempfile takes less than 0.001s from the second time.
+# Not using it takes less than 3s because of fetching data on the web each time.
+# By default tempfile is used, you can turn it off by:
+ua = user_agent(use_tempfile=False)
+
+# If there is an async function needing a useragent in your script,
+# don't put `user_agent()` in your async function, put it above instead.
+
+
+# You can also import multithreading version offered.
+# Time taken is no big difference with the default asyncio version.
+# All usages are same, except that `user_agent()` can be put within an async function.
+from fake_user_agent.thread_version import user_agent
+
+
+# Remove tempfile
+from fake_user_agent.main import rm_tempfile
+rm_tempfile()  # For Linux, should add "sudo" in front of python3 when executing script with this function
+```
+Remove tempfile with terminal command on Linux or MacOS. Replace `var` with respective folder name on Windows
+```bash
+find /var/ -name "fake_useragent*" -type f -exec rm {} \; # For MacOS
+sudo find /tmp/ -name "fake_useragent*" -type f -exec rm {} \; # For Linux
+```
+
+# Installation
+```python
+pip3 install fake_user_agent
+sudo pip3 install fake_user_agent # For Linux
+```
+
