@@ -1,7 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
-
+import asyncio
+import websockets
 
 FUA = UserAgent().chrome
 
@@ -51,14 +52,14 @@ class Game:
     def is_valid(self):
         if isinstance(validator(text=self.text), str):
             try:
-                Zaka = 'https://zaka-zaka.com/game/{}'.format(validator(text=self.text))
-                req = requests.get(Zaka, headers={'User-Agent': FUA})
+                zaka = 'https://zaka-zaka.com/game/{}'.format(validator(text=self.text))
+                req = requests.get(zaka, headers={'User-Agent': FUA})
                 code_txt = req.text
                 soup = BeautifulSoup(code_txt, 'lxml')
                 old_price = soup.find_all('div', class_='old-price')
                 price_now = soup.find_all('div', class_='price')
                 discount = soup.find_all('div', class_='discount')
-                game = price_game(oldprice=old_price, price=price_now, discount=discount, site_url=Zaka)
+                game = price_game(oldprice=old_price, price=price_now, discount=discount, site_url=zaka)
                 return f'{game}'
             except IndexError:
                 return """ 
@@ -66,6 +67,8 @@ class Game:
                         """
         else:
             return print('Sorry')
+
+
 # for key, value in req.request.headers.items():
 #     print(key+':'+value)
 
