@@ -10,17 +10,17 @@ FUA = UserAgent().chrome
 async def price_game(oldprice, price, discount, site_url):
     price_list = []
     if oldprice and discount == []:
-        task = [asyncio.ensure_future(find(obj=price[-1], to_append=price_list))]
+        task = [asyncio.create_task(find(obj=price[-1], to_append=price_list))]
         await asyncio.wait(task)
         fn = f"Old price: -, Discount: -%, Price: {price_list[0]}\n{site_url}"
         return fn
     elif price == []:
-        return print("""
+        return """
 This game is not in the store,
 It will go on sale soon
 Or enter the name of the game like this: 
 Elden Ring, Fallout New Vegas, Rising Storm 2 Vietnam
-                """)
+                """
     else:
         tasks = [
             asyncio.ensure_future(find(obj=oldprice[-1], to_append=price_list)),
@@ -69,8 +69,11 @@ class Game:
                 old_price = soup.find_all('div', class_='old-price')
                 price_now = soup.find_all('div', class_='price')
                 discount = soup.find_all('div', class_='discount')
-                tasks = [asyncio.ensure_future(price_game(oldprice=old_price, price=price_now, discount=discount, site_url=zaka))]
-                return await asyncio.wait(tasks)
+                tasks = asyncio.create_task(
+                    price_game(oldprice=old_price, price=price_now, discount=discount, site_url=zaka)
+                )
+                res = await asyncio.gather(tasks)
+                return res[0]
             except IndexError:
                 return """ 
                     Enter the name of the game like this:\n
@@ -86,10 +89,14 @@ class Game:
 
 async def main(text):
     gm = Game(text=text)
-    tasks = [asyncio.ensure_future(gm.is_valid())]
-    await asyncio.wait(tasks)
-    return tasks
+    return await gm.is_valid()
 
+
+# async def result(text):
+#     loop = asyncio.get_event_loop()
+#     result = loop.run_until_complete(await main(text=text))
+#     loop.close()
+#     return result.result()
 
 if __name__ == '__main__':
     pass
