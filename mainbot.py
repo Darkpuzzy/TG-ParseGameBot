@@ -37,7 +37,9 @@ async def find_game(message: types.Message, state: FSMContext):
 @dp.message_handler(state=fs.wait_game)
 async def finder(message: types.ContentType, state: FSMContext):
     game_text = message.text
-    await message.reply(findgame.main(text=game_text))
+    aio = await findgame.main(text=game_text)
+    print(aio)
+    await message.reply(aio)
     # user_data = await state.get_data()
     await state.finish()
 
