@@ -10,7 +10,11 @@ FUA = UserAgent().chrome
 HTMLPARCE = etree.HTMLParser()
 URL_ZAKA = 'https://zaka-zaka.com/game/'
 URL_STEAM = 'https://store.steampowered.com/search/?term='
-price_list = []
+price_list_steam = [] # Для сравнения цен
+
+
+def timer():
+    pass
 
 
 class Game:
@@ -46,14 +50,11 @@ class Game:
                 zaka = 'https://zaka-zaka.com/game/{}'.format(await validator(text=self.text))
                 code_txt = await client(text=await validator(text=self.text), uri=URL_ZAKA)
                 soup = BeautifulSoup(code_txt, 'lxml')
-                print(soup)
                 old_price = soup.find_all('div', class_='old-price')
                 price_now = soup.find_all('div', class_='price')
                 discount = soup.find_all('div', class_='discount')
-                print(old_price)
                 tasks = asyncio.create_task(price_game(oldprice=old_price, price=price_now, discount=discount, site_url=zaka))
                 res2 = await asyncio.gather(tasks)
-                print(res2)
                 return res2[0] # В данном случае получаем фильтрованные данные
             except IndexError:
                 return """
@@ -81,13 +82,15 @@ async def parse(uri):
         for i in j2:
             priceascii = i.text
             p1 = re.search("\d[0-9]\d", str(priceascii))
+            print(p1)
             list_test.append(p1.group())
     else:
         for i in j1:
             priceascii = i.text
             p1 = re.search("\d[0-9]\d", str(priceascii))
+            print(p1)
             list_test.append(p1.group())
-    final_price = await cheak_price(list_steam=list_test, list_zaka=price_list)
+    final_price = await cheak_price(list_steam=list_test, list_zaka=price_list_steam)
     if final_price == None:
         return 'Steam problems'
     else:
@@ -105,8 +108,7 @@ async def cheak_price(list_steam, list_zaka):
 
 
 async def price_game(oldprice, price, discount, site_url):
-    print(oldprice)
-    print(price_list)
+    price_list = []
     if oldprice and discount == []:
         future = [asyncio.ensure_future(find(obj=price[-1], to_append=price_list))]
         await asyncio.wait(future)
@@ -141,7 +143,6 @@ async def links(name, tree):
             list_links.append(advacii['href'])
         elif name.upper() in advacii['href']:
             list_links.append(advacii['href'])
-
     if not list_links:
         interim_list = []
         j1 = tree.xpath(f"//div[@id='search_resultsRows']/a[1]")
@@ -151,7 +152,6 @@ async def links(name, tree):
         game_name = await asyncio.gather(tasks)
         enter = game_name[0]
         return await links(name=enter, tree=tree)
-    # print(list_links)
     return list_links
 
 
@@ -218,6 +218,7 @@ async def find(obj, to_append):
         if a.isdigit:
             go_int = int(a)
             to_append.append(go_int)
+            price_list_steam.append(go_int)
             return go_int
 
 
@@ -252,13 +253,6 @@ async def main(text):
     res2 = await gm.steam_find()
     return f'Zaka-Zaka Store:\n{res1}\nSteam Store:\n{res2}\n'
 
-# for key, value in req.request.headers.items():
-#     print(key+':'+value)
-# async def result(text):
-#     loop = asyncio.get_event_loop()
-#     result = loop.run_until_complete(await main(text=text))
-#     loop.close()
-#     return result.result()
 
 if __name__ == '__main__':
     pass
@@ -266,6 +260,13 @@ if __name__ == '__main__':
     # loop.run_until_complete(main('Elden Ring')) # Elden Ring, Rising Storm 2 Vietnam, Fallot 3, Fallout New Vegas
     # loop.close()
 
+# for key, value in req.request.headers.items():
+#     print(key+':'+value)
+# async def result(text):
+#     loop = asyncio.get_event_loop()
+#     result = loop.run_until_complete(await main(text=text))
+#     loop.close()
+#     return result.result()
 """
 
 html = html.split('<table class="ws-table-all notranslate">')[1]
