@@ -13,10 +13,6 @@ URL_STEAM = 'https://store.steampowered.com/search/?term='
 price_list_steam = [] # Для сравнения цен
 
 
-def timer():
-    pass
-
-
 class Game:
 
     def __init__(self, text):
