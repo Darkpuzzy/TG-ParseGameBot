@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\user\Desktop\ПРОЕКТЫ\ParseBot\env
+set VIRTUAL_ENV=C:\Users\user\Desktop\PROJECTS\ParseBot\env
 
 if not defined PROMPT set PROMPT=$P$G
 

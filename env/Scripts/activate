@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\user\Desktop\ПРОЕКТЫ\ParseBot\env"
+VIRTUAL_ENV="C:\Users\user\Desktop\PROJECTS\ParseBot\env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
